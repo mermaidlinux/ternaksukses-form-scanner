@@ -15,8 +15,9 @@ body {
   text-align: center;
 }
 .logo {
-  width: 100px;
-  margin-bottom: 2px;
+  max-width: 120px;
+  margin: 0 auto;
+  display: block;
 }
 h1 {
   font-size: 20px;
