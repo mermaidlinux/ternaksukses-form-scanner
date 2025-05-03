@@ -1,21 +1,51 @@
+// service-worker.js
 const CACHE_NAME = 'form-scanner-cache-v1';
 const URLsToCache = [
-  '.',
-  'index.html',
-  'style.css',
-  'app.js',
-  'manifest.webmanifest'
+  '/',
+  '/index.html',
+  '/style.css',
+  '/app.js',
+  '/manifest.json',
+  '/offline.html',
+  '/assets/logo.png',
+  '/assets/icon-192.png',
+  '/assets/icon-512.png'
 ];
 
 self.addEventListener('install', event => {
-  console.log('Service Worker installing.');
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.addAll(URLsToCache);
+    })
+  );
   self.skipWaiting();
 });
 
 self.addEventListener('activate', event => {
-  console.log('Service Worker activated.');
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(name => {
+          if (name !== CACHE_NAME) {
+            return caches.delete(name);
+          }
+        })
+      );
+    })
+  );
+  self.clients.claim();
 });
 
 self.addEventListener('fetch', event => {
-  event.respondWith(fetch(event.request));
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request).catch(() => caches.match('/offline.html'))
+    );
+  } else {
+    event.respondWith(
+      caches.match(event.request).then(response => {
+        return response || fetch(event.request);
+      })
+    );
+  }
 });
