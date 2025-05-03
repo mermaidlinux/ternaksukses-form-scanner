@@ -38,17 +38,14 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', event => {
   if (event.request.mode === 'navigate') {
-    // Artinya ini permintaan untuk halaman HTML
     event.respondWith(
       fetch(event.request).catch(() => caches.match('/offline.html'))
     );
   } else {
-    // Untuk asset biasa: css, js, icon, dll
     event.respondWith(
-      caches.match(event.request).then(response => {
-        return response || fetch(event.request);
-      })
+      caches.match(event.request).then(response => response || fetch(event.request))
     );
   }
 });
+
 
