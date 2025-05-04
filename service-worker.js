@@ -1,5 +1,4 @@
-// service-worker.js
-const CACHE_NAME = 'form-scanner-cache-v1';
+const CACHE_NAME = 'form-scanner-cache-v2';
 const URLsToCache = [
   '/',
   '/index.html',
@@ -23,15 +22,13 @@ self.addEventListener('install', event => {
 
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
+    caches.keys().then(cacheNames =>
+      Promise.all(
         cacheNames.map(name => {
-          if (name !== CACHE_NAME) {
-            return caches.delete(name);
-          }
+          if (name !== CACHE_NAME) return caches.delete(name);
         })
-      );
-    })
+      )
+    )
   );
   self.clients.claim();
 });
@@ -47,5 +44,3 @@ self.addEventListener('fetch', event => {
     );
   }
 });
-
-
